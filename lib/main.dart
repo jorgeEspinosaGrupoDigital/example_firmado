@@ -1,12 +1,16 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:example_firmado/pdf_view.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:gse_bemyself_protobuf/gse_bemyself_protobuf.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pki_pdf_signer/page_widget/document_pki.dart';
 import 'package:pki_pdf_signer/page_widget/page_signer.dart';
 import 'package:pki_pdf_signer/pki_pdf_signer.dart';
+import 'package:pki_pdf_signer/styles_main_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -65,9 +69,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 1;
+  String? _signatures;
 
   void myCallback(BuildContext context, InfoSign info)  async {
-    Navigator.pop(context);
+    Navigator.popUntil(context, (route) => route.isFirst);
     const String _token = "eyJhbGciOiJSUzI1NiJ9.eyJ1c2VybmFtZSI6Im1vYmlsZV9nc2VAYmVteXNlbGYuY29tIiwicGFzc3dvcmQiOiJQcnVlYmFzMTIzQCIsImVtYWlsIjoibW9iaWxlX2dzZUBiZW15c2VsZi5jb20iLCJndWlkIjoiY2VkNDM3ODctODlhZi00NjRkLTk4ZWQtYzE1ZTBkYjM0MzZiMTcxMjU4NDY5NDg5NTg5NSIsInBob25lIjoiMzExMTExMTExMSIsImZ1bGxOYW1lIjoiQmVNeXNlbGYiLCJPVFAiOiI3NTM3MDMiLCJjaXRpemVuU2VyaWFsSUQiOiJiNzQ5ZGIwYi1jNjVhLTQ0ZDktYjQ1NC1kMDlkMDgwMmMyNDAiLCJpYXQiOjE3MjQ4NTA3NDAsImlzcyI6Imh0dHBzOi8vcWEtYi5nc2UuY29tLmNvIn0.U4v4sajD1zLHZ24aXf7KDe5ZOzQkLRMoXMBB9RqDIgY0pOqwWklEp5ciNsEnHc-IwO6xvMNnfKTDTgng6GmQw0meKebAPtl6wAD40jBfpEM-vfv5QN-udTRFZIMdbq1_KF-vi47GCYNtzNIacC8bT2PAnRDr1ru-ljK1OKZkCK9Z5oY5hljDENwmaKjc4H_w3qr5eZdfFSTsSLYxMcixxlnU1AWg6h2ablfKdxdlvKmiRE4rI0ts1ftMHPEePWh_TfQIbhWFrMFrUTUTPUNvy4Gnr8ZIE_SGBCmfAWPlKsNKTkPO1s8atumTxlKIy25SZzd2_1Y2WYi4fLOullc6-Q";
     int pagina = info.page;
     String user = "MS21457";
@@ -93,7 +98,8 @@ class _MyHomePageState extends State<MyHomePage> {
         tenantLanguage: "ES",
         clientSerialID: "b749db0b-c65a-44d9-b454-d09d0802c240",
         qa: qa,
-        bordeFirma: true
+        bordeFirma: true,
+        docSize: info.docSize
     );
     resp.fold(
             (map) => print("status: ${map.statusCode}, message: ${map.message}")
@@ -104,20 +110,25 @@ class _MyHomePageState extends State<MyHomePage> {
           file.writeAsBytesSync(map.data);
           print("Escribio!!!");
           print(map.signatures);
+          _signatures = map.signatures;
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString("signatures", _signatures ?? "[]");
         }
     );
 
   }
 
+
+
+
   void _quemado() async {
     final path = "${(await getApplicationDocumentsDirectory()).path}/result.pdf";
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? signatures = await prefs.getString("signatures");
     await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (ctx) => PdfVisor.fromPath(
-                path,
-                myCallback
-            )
+            builder: (ctx) => PdfView(path: path, showButton: false, signatures: signatures, callback: myCallback,)
         )
     );
   }
@@ -134,10 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
       await Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (ctx) => PdfVisor.fromPath(
-                  path,
-                  myCallback
-              )
+              builder: (ctx) => PdfView(path: path, showButton: true, callback: myCallback,)
           )
       );
     } else {
