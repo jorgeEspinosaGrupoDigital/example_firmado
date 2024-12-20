@@ -5,6 +5,7 @@ import 'package:pki_pdf_signer/page_widget/document_pki.dart';
 import 'package:pki_pdf_signer/page_widget/page_signer.dart';
 import 'package:pki_pdf_signer/pki_pdf_signer.dart';
 import 'package:pki_pdf_signer/styles_main_button.dart';
+import 'package:share_plus/share_plus.dart';
 
 class PdfView extends StatefulWidget {
   final String path;
@@ -28,7 +29,9 @@ class _PdfView extends State<PdfView> {
     );
   }
 
-
+  void share() {
+    Share.shareXFiles([XFile(widget.path)]);
+  }
 
   final StyleMainButton _styleMainButton = StyleMainButton(
       textStyle: const TextStyle(color: Colors.black),
@@ -42,7 +45,12 @@ class _PdfView extends State<PdfView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("PDF VIEW"),),
+      appBar: AppBar(
+        title: const Text("PDF VIEW"),
+        actions: !widget.showButton ? [
+          IconButton(onPressed: share, icon: const Icon(CupertinoIcons.share)),
+        ] : null,
+      ),
       body: PdfVisor.fromPath(
           path: widget.path,
           showButton: widget.showButton,
@@ -50,7 +58,8 @@ class _PdfView extends State<PdfView> {
           callback: _myCallBack,
           styleMainButton: _styleMainButton,
           appBarBackgroundColor: Colors.black,
-          marginWidget: Container()
+          marginWidget: Container(),
+          signatures: widget.signatures,
       ),
     );
   }

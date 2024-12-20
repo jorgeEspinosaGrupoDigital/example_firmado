@@ -4,6 +4,7 @@ import 'package:pki_pdf_signer/page_widget/page_signer.dart';
 
 class SignView extends StatefulWidget {
 
+  
   final DocumentPki doc;
   final void Function(BuildContext, InfoSign) callback;
 
@@ -14,11 +15,14 @@ class SignView extends StatefulWidget {
 
 }
 
+
 class _SignView extends State<SignView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Page Signer"),),
+      appBar: AppBar(
+        title: const Text("Page Signer"),
+        ),
       body: PageSigner(
           document: widget.doc,
           callback: widget.callback,
