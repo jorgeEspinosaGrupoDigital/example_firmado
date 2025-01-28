@@ -34,19 +34,40 @@ class _PdfView extends State<PdfView> {
   }
 
   final StyleMainButton _styleMainButton = StyleMainButton(
-      textStyle: const TextStyle(color: Colors.black),
-      disableTextStyle: const TextStyle(color: Colors.black54),
+      textStyle: const TextStyle(
+          color: Color(0xff141D1E),
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+      ),
+      disableTextStyle: const TextStyle(color: Color(0xff141D1E)),
       lottieLoading: Container(),
       text: 'Firmar',
-      color: Colors.blueAccent,
-      disableColor: Colors.grey
+      color: const Color(0xff25DFEB),
+      disableColor: const Color(0xff25DFEB),
+      cornerRadius: 16
   );
+
+  final StyleSecondaryButton _styleSecondaryButton = StyleSecondaryButton(
+      text: "Rechazar",
+      borderColor: const Color(0xff25DFEB),
+      backgroundColor: const Color(0xff0C0C0C),
+      textStyle: const TextStyle(
+        color: Color(0xff25DFEB),
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+      ),
+      cornerRadius: 16,
+      onPressed: () {}
+  );
+
 
   @override
   Widget build(BuildContext context) {
+    const AppBarStyle appBarStyle = AppBarStyle(backgroundColor: Color(0xff0C0C0C), textColor: Color(0xffDAE4E5));
     return Scaffold(
       appBar: AppBar(
-        title: const Text("PDF VIEW"),
+        backgroundColor: appBarStyle.backgroundColor,
+        title: const Text("PDF VIEW", style: TextStyle(color: Color(0xffDAE4E5)),),
         actions: !widget.showButton ? [
           IconButton(onPressed: share, icon: const Icon(CupertinoIcons.share)),
         ] : null,
@@ -57,7 +78,8 @@ class _PdfView extends State<PdfView> {
           tenantLanguage: "ES",
           callback: _myCallBack,
           styleMainButton: _styleMainButton,
-          appBarBackgroundColor: Colors.black,
+          styleSecondaryButton: _styleSecondaryButton,
+          appBarStyle: appBarStyle,
           marginWidget: Container(),
           signatures: widget.signatures,
       ),

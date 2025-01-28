@@ -203,11 +203,13 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: ButtonBar(
         children: [
           FloatingActionButton(
+            heroTag: "main1",
           onPressed:_incrementCounter,
             tooltip: 'Increment',
           child: const Icon(Icons.file_open),
       ),
           FloatingActionButton(
+            heroTag: "main2",
             onPressed: _quemado,
             tooltip: 'Increment',
             child: const Icon(Icons.restart_alt),
